@@ -4,9 +4,12 @@ const hapiAuthJWT = require('hapi-auth-jwt2');
 module.exports = {
 	configure: (server) => {
 		const validate = function(decoded, request, callback) {
-			request.pg.client.query(`SELECT * FROM Users WHERE TOKEN='${decoded.token}'`, function(err, result) {
-				return callback(null, !err && result && result.rows.length > 0);
-			});
+			console.log('**');
+			// console.log(server.pg('users').where({token: decoded.token}).select('id').count());
+			return callback(null, true);
+			// request.pg.client.query(`SELECT * FROM Users WHERE TOKEN='${decoded.token}'`, function(err, result) {
+			// 	return callback(null, !err && result && result.rows.length > 0);
+			// });
 		};
 
 		server.register(hapiAuthJWT, function(err) {

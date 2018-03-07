@@ -22,8 +22,9 @@
     "hapi": "^16",
     "hapi-auth-jwt2": "^7",
     "hapi-login": "^1.2.2",
-    "hapi-postgres-connection": "^6.5.0",
     "joi": "^13.1.2",
-    "jsonwebtoken": "^8.2.0"
+    "jsonwebtoken": "^8.2.0",
+    "knex": "^0.14.4",
+    "pg": "^7.4.1"
   }
 }

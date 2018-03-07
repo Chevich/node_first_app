@@ -6,11 +6,9 @@ const Hapi = require('hapi');
 const hapiAuthJWT = require('hapi-auth-jwt2');
 const config = require('./config/config').configure;
 const routes = require('./routes/config').configure;
-const secret = 'sdfsdkfsdfsdjkfhsdjfhs';
-
+const secret = 'secret';
 
 const server = new Hapi.Server();
-
 
 server.connection({
 	host: 'localhost',
@@ -19,42 +17,28 @@ server.connection({
 
 config(server);
 
-
-// bring your own validation function
-const validate = function (decoded, request, callback) {
-	console.log(" - - - - - - - decoded token:");
-	console.log(decoded);
-	console.log(" - - - - - - - request info:");
-	console.log(request.info);
-	console.log(" - - - - - - - user agent:");
-	console.log(request.headers['user-agent']);
-
-	// do your checks to see if the person is valid
-	if (!people[decoded.id]) {
-		return callback(null, false);
-	}
-	else {
-		return callback(null, true);
-	}
+const validate = function(decoded, request, callback) {
+	request.pg.client.query(`SELECT * FROM Users WHERE TOKEN='${decoded.token}'`, function(err, result) {
+		return callback(null, !err && result && result.rows.length > 0);
+	});
 };
 
-server.register(hapiAuthJWT, function (err) {
-	if(err){
+server.register(hapiAuthJWT, function(err) {
+	if (err) {
 		console.log(err);
 	}
 
 	server.auth.strategy('jwt', 'jwt',
-		{ key: secret,
-			validateFunc: validate,            // validate function defined above
-			verifyOptions: { algorithms: [ 'HS256' ] } // pick a strong algorithm
+		{
+			key: secret,
+			validateFunc: validate,
+			verifyOptions: { algorithms: ['HS256'] }
 		});
 
 	server.auth.default('jwt');
 
 	routes(server);
 });
-
-
 
 server.start((err) => {
 

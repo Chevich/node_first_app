@@ -1,8 +1,6 @@
 const routes = require('../routes/config').configure;
 const hapiAuthJWT = require('hapi-auth-jwt2');
 
-const JWTSecret = 'secret';
-
 module.exports = {
 	configure: (server) => {
 		const validate = function(decoded, request, callback) {
@@ -18,7 +16,7 @@ module.exports = {
 
 			server.auth.strategy('jwt', 'jwt',
 				{
-					key: JWTSecret,
+					key: process.env.JWTSecret,
 					validateFunc: validate,
 					verifyOptions: { algorithms: ['HS256'] }
 				});

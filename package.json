@@ -17,9 +17,13 @@
   },
   "homepage": "https://github.com/Chevich/node_first_app#readme",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "env2": "^2.2.0",
     "hapi": "^16",
     "hapi-auth-jwt2": "^7",
-    "hapi-postgres-connection": "^6.5.0"
+    "hapi-login": "^1.2.2",
+    "hapi-postgres-connection": "^6.5.0",
+    "joi": "^13.1.2",
+    "jsonwebtoken": "^8.2.0"
   }
 }

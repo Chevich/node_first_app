@@ -1,0 +1,25 @@
+{
+  "name": "node_first_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chevich/node_first_app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chevich/node_first_app/issues"
+  },
+  "homepage": "https://github.com/Chevich/node_first_app#readme",
+  "dependencies": {
+    "env2": "^2.2.0",
+    "hapi": "^16",
+    "hapi-auth-jwt2": "^7",
+    "hapi-postgres-connection": "^6.5.0"
+  }
+}

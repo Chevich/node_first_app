@@ -1,30 +1,18 @@
+'use strict';
+
 const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
+const pg = require('../config/database').database;
 
 const login_fields = {
 	email: Joi.string().email().required(), // Required
 	password: Joi.string().required().min(6)   // minimum length 6 characters
 };
 
-let pg = null;
 
-module.exports = {
-	configure: (server) => {
-		pg = server.pg;
-		const opts = { fields: login_fields, handler: loginHandler, loginPath: '/login' };
-		server.register([{ register: require('hapi-login'), options: opts }], function(err) {
-			if (err) {
-				console.error('Failed to load plugin:', err);
-			}
-		});
-
-		server.route(routes);
-	},
-};
-
-loginHandler = (request, reply) => {
+const loginHandler = (request, reply) => {
 	return pg('users').select('*').where({ email: request.payload.email }).then((result) => {
 		if (result && result[0]) {
 			const currentUser = result[0];
@@ -41,39 +29,12 @@ loginHandler = (request, reply) => {
 		}
 	}).catch((err) => reply(Boom.notFound('Sorry, that password is invalid, please try again.')));
 };
-
-signJWT = (user) => {
+const signJWT = (user) => {
 	const object = { id: user.id, name: user.name, token: user.token };
 	return JWT.sign(object, process.env.JWTSecret);
 };
 
-routes = [
-	{
-		method: 'GET',
-		path: '/',
-		config: { auth: false },
-		handler: function(request, reply) {
-			reply('hello world');
-		},
-	},
-	{
-		method: 'GET',
-		path: '/users',
-		config: { auth: 'jwt' },
-		handler: function(request, reply) {
-			pg('users').select('id', 'name', 'email', 'created_at', 'updated_at').then((result) => {
-				reply(result);
-			});
-		}
-	},
-	{
-		method: 'GET',
-		path: '/restricted',
-		config: { auth: 'jwt' },
-		handler: function(request, reply) {
-			reply({ message: 'You used a Valid JWT Token to access /restricted endpoint!' });
-		}
-	},
+const routes = [
 	{
 		method: 'POST',
 		path: '/sign',
@@ -95,7 +56,7 @@ routes = [
 					if (err) {
 						return reply(Boom.internal('Bcrypt error:', err.message));
 					}
-					pg('users').insert({ name: request.payload.email, token: hash }).then(result => {
+					pg('users').insert({ name: request.payload.email, email: request.payload.email, token: hash }).then(result => {
 						const object = { id: result.id, name: request.payload.email, token: hash };
 						reply({ token: signJWT(object) });
 					})
@@ -105,4 +66,15 @@ routes = [
 	}
 ];
 
+module.exports = {
+	configure: (server) => {
+		const opts = { fields: login_fields, handler: loginHandler, loginPath: '/login' };
+		server.register([{ register: require('hapi-login'), options: opts }], function(err) {
+			if (err) {
+				console.error('Failed to load plugin:', err);
+			}
+		});
 
+		server.route(routes);
+	},
+};

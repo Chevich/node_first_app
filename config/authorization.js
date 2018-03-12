@@ -1,14 +1,12 @@
-const routes = require('../routes/config').configure;
+'use strict';
+
+const controllers = require('../controllers/config').configure;
 const hapiAuthJWT = require('hapi-auth-jwt2');
+
+const pg = require('./database').database;
 
 module.exports = {
 	configure: (server) => {
-		const validate = function(decoded, request, callback) {
-			return server.pg('users').where({ token: decoded.token }).count().then((result) => {
-				return callback(null, Number(result[0].count) === 1);
-			});
-		};
-
 		server.register(hapiAuthJWT, function(err) {
 			if (err) {
 				console.log(err);
@@ -23,7 +21,13 @@ module.exports = {
 
 			server.auth.default('jwt');
 
-			routes(server);
+			controllers(server);
 		});
 	}
+};
+
+const validate = function(decoded, request, callback) {
+	return pg('users').where({ token: decoded.token }).count().then((result) => {
+		return callback(null, Number(result[0].count) === 1);
+	});
 };

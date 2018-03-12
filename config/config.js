@@ -1,9 +1,13 @@
-module.exports ={
+'use strict';
+
+module.exports = {
 	configure: (server) => {
-		server.pg = require('knex')({
+		const database = require('./database');
+		const pg = require('knex')({
 			client: 'pg',
 			connection: process.env.DATABASE_URL,
 			searchPath: ['knex', 'public'],
 		});
+		database.setDatabase(pg);
 	}
 };

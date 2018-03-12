@@ -3,11 +3,7 @@
 module.exports = {
 	configure: (server) => {
 		const database = require('./database');
-		const pg = require('knex')({
-			client: 'pg',
-			connection: process.env.DATABASE_URL,
-			searchPath: ['knex', 'public'],
-		});
+		const pg = require('../db/knex');
 		database.setDatabase(pg);
 	}
 };

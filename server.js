@@ -1,6 +1,9 @@
 'use strict';
 
-require('env2')('.env');
+require('env2')(`.env.${process.env.NODE_ENV || 'test'}`);
+
+console.log('Environment = ', process.env.NODE_ENV);
+console.log('DB = ', process.env.DATABASE_URL);
 
 const Hapi = require('hapi');
 const config = require('./config/config').configure;

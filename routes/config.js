@@ -8,42 +8,42 @@ const login_fields = {
 	password: Joi.string().required().min(6)   // minimum length 6 characters
 };
 
+let pg = null;
+
 module.exports = {
 	configure: (server) => {
-		// const opts = { fields: login_fields, handler: loginHandler, loginPath: '/login' };
-		// server.register([{ register: require('hapi-login'), options: opts }], function(err) {
-		// 	if (err) {
-		// 		console.error('Failed to load plugin:', err);
-		// 	}
-		// });
-		//
+		pg = server.pg;
+		const opts = { fields: login_fields, handler: loginHandler, loginPath: '/login' };
+		server.register([{ register: require('hapi-login'), options: opts }], function(err) {
+			if (err) {
+				console.error('Failed to load plugin:', err);
+			}
+		});
+
 		server.route(routes);
 	},
 };
 
-// loginHandler = (request, reply) => {
-// 	request.pg.client.query(`SELECT * FROM Users WHERE EMAIL ilike '${request.payload.email}'`, function(err, res) {
-// 		if (err) {
-// 			reply(Boom.notFound('Sorry, that password is invalid, please try again.'));
-// 		}
-//
-// 		// Bcrypt.hash(request.payload.password, process.env.saltRounds, function(err, hash) {
-// 		// 	console.log(hash, err);
-// 		// });
-//
-// 		const currentUser = res.rows[0];
-// 		Bcrypt.compare(request.payload.password, currentUser.token, function(err, isValid) {
-// 			if (!err && isValid) {
-// 				const object = { id: currentUser.id, name: currentUser.name, token: currentUser.token };
-// 				const token = JWT.sign(object, process.env.JWTSecret);
-// 				reply({ token: token }).header("Authorization", request.headers.authorization); // return JWT token
-// 			} else {
-// 				reply(Boom.notFound('Sorry, that username or password is invalid, please try again.'));
-// 			}
-// 		});
-// 	});
-// };
-//
+loginHandler = (request, reply) => {
+	return pg('users').select('*').where({email: request.payload.email}).then((result) => {
+		if (result && result[0]) {
+			const currentUser = result[0];
+			Bcrypt.compare(request.payload.password, currentUser.token, function(err, isValid) {
+				if (!err && isValid) {
+					const object = { id: currentUser.id, name: currentUser.name, token: currentUser.token };
+					const token = JWT.sign(object, process.env.JWTSecret);
+					reply({ token: token }).header("Authorization", request.headers.authorization); // return JWT token
+				} else {
+					reply(Boom.notFound('Sorry, that username or password is invalid, please try again.'));
+				}
+			});
+		} else {
+			throw new Error('error');
+		}
+	}).catch((err) => reply(Boom.notFound('Sorry, that password is invalid, please try again.')));
+};
+
+
 routes = [
 	// {
 	// 	method: 'GET',

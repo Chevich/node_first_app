@@ -45,26 +45,24 @@ loginHandler = (request, reply) => {
 
 
 routes = [
-	// {
-	// 	method: 'GET',
-	// 	path: '/',
-	// 	config: { auth: false },
-	// 	handler: function(request, reply) {
-	// 		reply('hello world');
-	// 	},
-	// },
-	// {
-	// 	method: 'GET',
-	// 	path: '/users',
-	// 	config: { auth: 'jwt' },
-	// 	handler: function(request, reply) {
-	// 		const q = 'SELECT * FROM Users';
-	// 		request.pg.client.query(q, function(err, result) {
-	// 			console.log(err, result.rows);
-	// 			reply(result.rows);
-	// 		});
-	// 	}
-	// },
+	{
+		method: 'GET',
+		path: '/',
+		config: { auth: false },
+		handler: function(request, reply) {
+			reply('hello world');
+		},
+	},
+	{
+		method: 'GET',
+		path: '/users',
+		config: { auth: 'jwt' },
+		handler: function(request, reply) {
+			pg('users').select('id', 'name', 'email', 'created_at', 'updated_at').then((result) => {
+				reply(result);
+			});
+		}
+	},
 	{
 		method: 'GET',
 		path: '/restricted',

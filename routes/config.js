@@ -25,14 +25,13 @@ module.exports = {
 };
 
 loginHandler = (request, reply) => {
-	return pg('users').select('*').where({email: request.payload.email}).then((result) => {
+	return pg('users').select('*').where({ email: request.payload.email }).then((result) => {
 		if (result && result[0]) {
 			const currentUser = result[0];
 			Bcrypt.compare(request.payload.password, currentUser.token, function(err, isValid) {
 				if (!err && isValid) {
-					const object = { id: currentUser.id, name: currentUser.name, token: currentUser.token };
-					const token = JWT.sign(object, process.env.JWTSecret);
-					reply({ token: token }).header("Authorization", request.headers.authorization); // return JWT token
+					const object = { name: currentUser.name, token: currentUser.token };
+					reply({ token: signJWT(object) });
 				} else {
 					reply(Boom.notFound('Sorry, that username or password is invalid, please try again.'));
 				}
@@ -43,6 +42,10 @@ loginHandler = (request, reply) => {
 	}).catch((err) => reply(Boom.notFound('Sorry, that password is invalid, please try again.')));
 };
 
+signJWT = (user) => {
+	const object = { id: user.id, name: user.name, token: user.token };
+	return JWT.sign(object, process.env.JWTSecret);
+};
 
 routes = [
 	{
@@ -71,30 +74,35 @@ routes = [
 			reply({ message: 'You used a Valid JWT Token to access /restricted endpoint!' });
 		}
 	},
-	// {
-	// 	method: 'POST',
-	// 	path: '/sign',
-	// 	config: {
-	// 		auth: false,
-	// 		validate: {
-	// 			payload: Joi.object({
-	// 				email: Joi.string().email().required(),
-	// 				password: Joi.string().required().min(6),
-	// 				name: Joi.string().required(),
-	// 			})
-	// 		}
-	// 	},
-	// 	handler: function(request, reply) {
-	// 		request.pg.client.query(`SELECT * FROM Users where email ilike ${request.payload.email}`, function(err, result) {
-	// 			if (result.rows.length === 0) {
-	// 				request.pg.client.query(`insert into users values ${request.payload.email}`, function(err, result) {
-	// 					reply({})
-	// 				});
-	// 			}
-	// 		});
-	//
-	// 	}
-	// }
+	{
+		method: 'POST',
+		path: '/sign',
+		config: {
+			auth: false,
+			validate: {
+				payload: Joi.object({
+					email: Joi.string().email().required(),
+					password: Joi.string().required().min(6),
+				})
+			}
+		},
+		handler: function(request, reply) {
+			return pg('users').select('*').where({ email: request.payload.email }).then((result) => {
+				if (result && result[0]) {
+					return reply(Boom.conflict('Sorry, that email is busy. Try to restore password instead of sign in.'));
+				}
+				Bcrypt.hash(request.payload.password, Number(process.env.saltRounds), function(err, hash) {
+					if (err) {
+						return reply(Boom.internal('Bcrypt error:', err.message));
+					}
+					pg('users').insert({ name: request.payload.email, token: hash }).then(result => {
+						const object = { id: result.id, name: request.payload.email, token: hash };
+						reply({ token: signJWT(object) });
+					})
+				});
+			})
+		}
+	}
 ];
 
 

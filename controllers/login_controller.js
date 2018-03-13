@@ -4,7 +4,7 @@ const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
-const pg = require('../config/database').database;
+const pg = require('../db/knex');
 
 const login_fields = {
 	email: Joi.string().email().required(), // Required

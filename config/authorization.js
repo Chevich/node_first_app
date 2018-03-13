@@ -3,7 +3,7 @@
 const controllers = require('../controllers/config').configure;
 const hapiAuthJWT = require('hapi-auth-jwt2');
 
-const pg = require('./database').database;
+const pg = require('../db/knex');
 
 module.exports = {
 	configure: (server) => {

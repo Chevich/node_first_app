@@ -1,6 +1,6 @@
 'use strict';
 
-const pg = require('../config/database').database;
+const pg = require('../db/knex');
 
 const routes = [
 	{

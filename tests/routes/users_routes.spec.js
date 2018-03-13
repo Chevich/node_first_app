@@ -2,32 +2,43 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 const server = require('../../server');
+const pg = require('../../db/knex');
+const login_helper = require('../helpers/login_helper');
 
 chai.use(chaiHttp);
 
-describe('API Routes', function() {
-	it('should return root', function(done) {
-		chai.request(server)
-			.get('/')
-			.end((err, res) => {
-				expect(res).to.have.status(200);
-				expect(res).to.be.html;
-				//
-				// res.should.have.status(200);
-				// res.should.be.json; // jshint ignore:line
-				// res.body.should.be.a('array');
-				// res.body.length.should.equal(4);
-				// res.body[0].should.have.property('name');
-				// res.body[0].name.should.equal('Suits');
-				// res.body[0].should.have.property('channel');
-				// res.body[0].channel.should.equal('USA Network');
-				// res.body[0].should.have.property('genre');
-				// res.body[0].genre.should.equal('Drama');
-				// res.body[0].should.have.property('rating');
-				// res.body[0].rating.should.equal(3);
-				// res.body[0].should.have.property('explicit');
-				// res.body[0].explicit.should.equal(false);
-				done();
+describe('/Users route', function() {
+	beforeEach(function(done) {
+		pg.migrate.rollback().then(function() {
+			pg.migrate.latest().then(function() {
+				pg.seed.run().then(function() {
+					done();
+				})
+			})
+		});
+	});
+
+	afterEach(function(done) {
+		pg.migrate.rollback().then(function() {
+			done();
+		});
+	});
+
+	it('should return all users list', function(done) {
+		login_helper.getTokenPromise('andy.chevich@gmail.com', 'andy123')
+			.then(token => {
+				return chai.request(server)
+					.get('/users')
+					.set('Authorization', `Bearer ${token}`)
+					.then(res => {
+						expect(res).to.have.status(200);
+						expect(res).to.be.json;
+						expect(res.body).to.be.an('array');
+						expect(res.body.length).to.equal(2);
+						done();
+					}).catch(function (err) {
+						done(err);
+					});
 			});
 	});
 });

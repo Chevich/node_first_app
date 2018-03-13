@@ -6,7 +6,6 @@ console.log('Environment = ', process.env.NODE_ENV);
 console.log('DB = ', process.env.DATABASE_URL);
 
 const Hapi = require('hapi');
-const config = require('./config/config').configure;
 const authorize = require('./config/authorization').configure;
 
 const server = new Hapi.Server();
@@ -16,7 +15,6 @@ server.connection({
 	port: 8080
 });
 
-config(server);
 authorize(server);
 
 server.start((err) => {

@@ -27,7 +27,7 @@ describe('/Users route', function() {
 	it('should return all users list', function(done) {
 		login_helper.getTokenPromise('andy.chevich@gmail.com', 'andy123')
 			.then(token => {
-				return chai.request(server)
+				chai.request(server)
 					.get('/users')
 					.set('Authorization', `Bearer ${token}`)
 					.then(res => {
@@ -36,7 +36,7 @@ describe('/Users route', function() {
 						expect(res.body).to.be.an('array');
 						expect(res.body.length).to.equal(2);
 						done();
-					}).catch(function (err) {
+					}).catch(function(err) {
 						done(err);
 					});
 			});

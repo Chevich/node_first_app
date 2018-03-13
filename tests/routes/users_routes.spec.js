@@ -37,8 +37,8 @@ describe('/Users route', function() {
 						expect(res.body.length).to.equal(2);
 						done();
 					}).catch(function(err) {
-						done(err);
-					});
+					done(err);
+				});
 			});
 	});
 });

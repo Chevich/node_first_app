@@ -1,9 +1,8 @@
 'use strict';
 
-require('env2')(`.env.${process.env.NODE_ENV || 'test'}`);
-
-console.log('Environment = ', process.env.NODE_ENV);
-console.log('DB = ', process.env.DATABASE_URL);
+const environment = process.env.NODE_ENV || 'development';
+require('env2')(`.env.${environment}`);
+console.log(`NODE env= ${environment}`);
 
 const Hapi = require('hapi');
 const authorize = require('./config/authorization').configure;
@@ -11,8 +10,8 @@ const authorize = require('./config/authorization').configure;
 const server = new Hapi.Server();
 
 server.connection({
-	host: 'localhost',
-	port: 8080
+	host: process.env.NODE_URL,
+	port: process.env.NODE_PORT
 });
 
 authorize(server);

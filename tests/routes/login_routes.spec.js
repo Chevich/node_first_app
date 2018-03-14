@@ -49,6 +49,7 @@ describe('/Login route', function() {
 				expect(res).to.have.status(404);
 				expect(res).to.be.json;
 				expect(res.body).to.have.property('error');
+				expect(res.body).not.to.have.property('token');
 				expect(res.body.error).to.eq('Not Found');
 				done();
 			});

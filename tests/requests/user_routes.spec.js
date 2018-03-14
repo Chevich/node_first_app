@@ -20,12 +20,11 @@ describe('/Users/:id route', function() {
 						expect(res.body).to.be.an('object');
 						expect(res.body).to.have.property('id');
 						expect(res.body).to.have.property('email');
+						expect(res.body).to.have.property('name', 'andy');
 						expect(res.body).to.have.property('updated_at');
 						expect(res.body).to.have.property('created_at');
 						expect(res.body).to.not.have.property('token');
 						expect(res.body).to.not.have.property('password');
-
-						expect(res.body.name).to.eq('andy');
 						done();
 					}).catch(done);
 			});
@@ -45,14 +44,12 @@ describe('/Users/:id route', function() {
 						expect(res).to.be.json;
 						expect(res.body).to.be.an('object');
 						expect(res.body).to.have.property('id');
-						expect(res.body).to.have.property('name');
+						expect(res.body).to.have.property('name', 'example');
 						expect(res.body).to.have.property('email');
 						expect(res.body).to.have.property('updated_at');
 						expect(res.body).to.have.property('created_at');
 						expect(res.body).to.not.have.property('token');
 						expect(res.body).to.not.have.property('password');
-
-						expect(res.body.name).to.eq('example');
 
 						done();
 					}).catch(done);
@@ -88,9 +85,9 @@ describe('/Users/:id route', function() {
 					.delete('/users/1')
 					.set('Authorization', `Bearer ${token}`)
 					.end((err, res) => {
-					expect(res).to.have.status(200);
-					done();
-				});
+						expect(res).to.have.status(200);
+						done();
+					});
 			});
 	});
 });

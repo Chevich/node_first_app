@@ -32,9 +32,8 @@ describe('/Sign route', function() {
 			.end((err, res) => {
 				expect(res).to.have.status(409);
 				expect(res).to.be.json;
-				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.eq('Conflict');
-				expect(res.body.message).to.eq('Sorry, that email is busy. Try to restore password instead of sign in.');
+				expect(res.body).to.have.property('error', 'Conflict');
+				expect(res.body).to.have.property('message', 'Sorry, that email is busy. Try to restore password instead of sign in.');
 				done();
 			});
 	});
@@ -49,8 +48,7 @@ describe('/Sign route', function() {
 			.end((err, res) => {
 				expect(res).to.have.status(400);
 				expect(res).to.be.json;
-				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.eq('Bad Request');
+				expect(res.body).to.have.property('error', 'Bad Request');
 				expect(res.body.validation.keys).to.include('email');
 				done();
 			});

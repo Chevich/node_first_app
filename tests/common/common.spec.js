@@ -1,17 +1,8 @@
 const pg = require('../../db/knex');
 
-beforeEach(function(done) {
-	pg.migrate.rollback().then(function() {
-		pg.migrate.latest().then(function() {
-			pg.seed.run().then(function() {
-				done();
-			})
-		})
-	});
-});
+beforeEach(() => pg.migrate.rollback()
+	.then(() => pg.migrate.latest())
+	.then(() => pg.seed.run())
+);
 
-afterEach(function(done) {
-	pg.migrate.rollback().then(function() {
-		done();
-	});
-});
+afterEach(() => pg.migrate.rollback());

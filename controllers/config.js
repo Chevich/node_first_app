@@ -16,8 +16,9 @@ const routes = [
 
 module.exports = {
 	configure: (server) => {
-		server.route(routes);
 		LoginController.configure(server);
 		UsersController.configure(server);
+
+		server.route(routes);
 	},
 };

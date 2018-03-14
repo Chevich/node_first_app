@@ -1,7 +1,7 @@
 {
   "name": "node_first_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Chevich's first node app",
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha tests/**/**.spec.js --exit --reporter dot",
@@ -23,10 +23,13 @@
     "hapi": "^16",
     "hapi-auth-jwt2": "^7",
     "hapi-login": "^1.2.2",
+    "hapi-swagger": "^7",
+    "inert": "^4.2.1",
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
     "knex": "^0.14.4",
-    "pg": "^7.4.1"
+    "pg": "^7.4.1",
+    "vision": "^4"
   },
   "devDependencies": {
     "chai": "^4.1.2",

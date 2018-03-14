@@ -39,6 +39,7 @@ const routes = [
 		method: 'POST',
 		path: '/sign',
 		config: {
+			tags: ['api'],
 			auth: false,
 			validate: {
 				payload: Joi.object({
@@ -76,5 +77,6 @@ module.exports = {
 		});
 
 		server.route(routes);
+		return routes;
 	},
 };

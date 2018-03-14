@@ -11,7 +11,11 @@ const server = new Hapi.Server();
 
 server.connection({
 	host: process.env.NODE_URL,
-	port: process.env.NODE_PORT
+	port: process.env.NODE_PORT,
+	routes: {
+		cors: true,
+		log: true
+	}
 });
 
 authorize(server);

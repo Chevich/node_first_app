@@ -2,27 +2,10 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 const server = require('../../server');
-const pg = require('../../db/knex');
-const login_helper = require('../helpers/login_helper');
 
 chai.use(chaiHttp);
 
 describe('/Sign route', function() {
-	beforeEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			pg.migrate.latest().then(function() {
-				pg.seed.run().then(function() {
-					done();
-				})
-			})
-		});
-	});
-
-	afterEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			done();
-		});
-	});
 
 	it('should add the user and return the token', function(done) {
 		chai.request(server)
@@ -51,6 +34,24 @@ describe('/Sign route', function() {
 				expect(res).to.be.json;
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.eq('Conflict');
+				expect(res.body.message).to.eq('Sorry, that email is busy. Try to restore password instead of sign in.');
+				done();
+			});
+	});
+
+	it('should NOT add the user with WRONG email', function(done) {
+		chai.request(server)
+			.post('/sign')
+			.send({
+				email: 'new$example.com',
+				password: '123123123'
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(400);
+				expect(res).to.be.json;
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.eq('Bad Request');
+				expect(res.body.validation.keys).to.include('email');
 				done();
 			});
 	});

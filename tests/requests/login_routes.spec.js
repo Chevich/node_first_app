@@ -2,27 +2,10 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 const server = require('../../server');
-const pg = require('../../db/knex');
 
 chai.use(chaiHttp);
 
 describe('/Login route', function() {
-	beforeEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			pg.migrate.latest().then(function() {
-				pg.seed.run().then(function() {
-					done();
-				})
-			})
-		});
-	});
-
-	afterEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			done();
-		});
-	});
-
 	it('should login the user and return the token', function(done) {
 		chai.request(server)
 			.post('/login')

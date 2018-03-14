@@ -2,29 +2,13 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = require('chai').expect;
 const server = require('../../server');
-const pg = require('../../db/knex');
 const login_helper = require('../helpers/login_helper');
 
 chai.use(chaiHttp);
 
 describe('/Users route', function() {
-	beforeEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			pg.migrate.latest().then(function() {
-				pg.seed.run().then(function() {
-					done();
-				})
-			})
-		});
-	});
 
-	afterEach(function(done) {
-		pg.migrate.rollback().then(function() {
-			done();
-		});
-	});
-
-	it('should return all users list', function(done) {
+	it('GET should return all users list', function(done) {
 		login_helper.getTokenPromise('andy.chevich@gmail.com', 'andy123')
 			.then(token => {
 				chai.request(server)

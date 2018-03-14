@@ -48,6 +48,18 @@ const routes = [
 				});
 		}
 	},
+	{
+		method: 'DELETE',
+		path: '/users/{id}',
+		config: { auth: 'jwt' },
+		handler: function(request, reply) {
+			users()
+				.where({ id: request.params.id }).del()
+				.then((result) => {
+					reply(result[0]);
+				});
+		}
+	},
 ];
 
 module.exports = {

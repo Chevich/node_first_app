@@ -80,4 +80,17 @@ describe('/Users/:id route', function() {
 				});
 			});
 	});
+
+	it('DELETE should delete user', function(done) {
+		login_helper.getTokenPromise('andy.chevich@gmail.com', 'andy123')
+			.then(token => {
+				chai.request(server)
+					.delete('/users/1')
+					.set('Authorization', `Bearer ${token}`)
+					.end((err, res) => {
+					expect(res).to.have.status(200);
+					done();
+				});
+			});
+	});
 });

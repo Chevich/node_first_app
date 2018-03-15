@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Chevich/node_first_app#readme",
   "dependencies": {
+    "amqplib": "^0.5.2",
     "bcrypt": "^1.0.3",
     "env2": "^2.2.0",
     "hapi": "^16",

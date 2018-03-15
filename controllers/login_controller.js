@@ -5,6 +5,7 @@ const Boom = require('boom');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
 const pg = require('../db/knex');
+const rabbit = require('../services/rabbit_service');
 
 const login_fields = {
 	email: Joi.string().email().required(), // Required
@@ -61,6 +62,7 @@ const routes = [
 					}
 					pg('users').insert({ name: request.payload.email, email: request.payload.email, token: hash }).then(result => {
 						const object = { id: result.id, name: request.payload.email, token: hash };
+						rabbit.sendMessage(`New user ${request.payload.email} registered!`);
 						reply({ token: signJWT(object) });
 					})
 				});

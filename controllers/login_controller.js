@@ -41,6 +41,8 @@ const routes = [
 		config: {
 			tags: ['api'],
 			auth: false,
+			description: 'Signs in user to system',
+			notes: 'Signs in user to system',
 			validate: {
 				payload: Joi.object({
 					email: Joi.string().email().required(),
@@ -79,4 +81,5 @@ module.exports = {
 		server.route(routes);
 		return routes;
 	},
+	routes: () => routes,
 };

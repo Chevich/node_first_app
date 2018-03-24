@@ -2,7 +2,7 @@
 
 const LoginController = require('./login_controller');
 const UsersController = require('./users_controller');
-const rabbit = require('../services/rabbit_service');
+// const rabbit = require('../services/rabbit_service');
 
 const routes = [
 	{
@@ -21,6 +21,6 @@ module.exports = {
 		UsersController.configure(server);
 
 		server.route(routes);
-		rabbit.messageReader();
+		// rabbit.messageReader();
 	},
 };
